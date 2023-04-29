@@ -113,7 +113,7 @@
                                         </select>
                                     </div>
                                 </div> <!-- form-row.// -->
-                                <button class="btn btn-block btn-primary">Apply</button>
+                                <button class="btn btn-block btn-info">Apply</button>
                             </div><!-- card-body.// -->
                         </div>
                     </article> <!-- filter-group .// -->
@@ -149,8 +149,12 @@
                                         <del class="price-old">$1980</del>
                                     </div> <!-- price-wrap.// -->
                                 </div>
-                                <a href="{{ product.get_url }}" class="btn btn-block btn-primary">View Details
+                                {% if  product.stock > 0 %}
+                                <a href="{{ product.get_url }}" class="btn btn-block btn-info">View Details
                                 </a>
+                                {% else  %}
+                                <h4>out of stock</h4>
+                                {% endif %}
                             </figcaption>
                         </figure>
                     </div> <!-- col.// -->
