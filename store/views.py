@@ -57,5 +57,6 @@ def search(request):
     context = {
         'products': products,
         'products_count':products_count,
+        'keyword': keyword,
     }         
     return render(request, 'store/store.html', context)
