@@ -52,6 +52,14 @@ def register(request):
 
 
 def login(request):
+    if request.method == "POST":
+        email = request.POST['email']
+        password = request.POST['password']
+        user = auth.authenticate(email=email, password=password)
+        auth.login(request, user)
+        messages.success(request, "you are logged in successfully")
+        return redirect('dashboard')
+
     return render(request, 'accounts/login.html')
 
 def activate(request, uidb64, token):
@@ -68,7 +76,7 @@ def activate(request, uidb64, token):
         return redirect('login')
     else:
         messages.error(request, 'invalid activation link')
-        return redirect('register ')      
+        return redirect('register')      
 
 
 
