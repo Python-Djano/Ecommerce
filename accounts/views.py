@@ -4,6 +4,8 @@ from .forms import RegisterationForm
 from accounts.models import Account
 from django.contrib import messages
 from django.contrib import auth
+from carts.views import _cart_id
+from carts.models import Cart, CartItem
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
@@ -56,9 +58,25 @@ def login(request):
         email = request.POST['email']
         password = request.POST['password']
         user = auth.authenticate(email=email, password=password)
-        auth.login(request, user)
-        messages.success(request, "you are logged in successfully")
-        return redirect('dashboard')
+        if user is not None:
+            try: 
+                cart = Cart.objects.get(cart_id=_cart_id(request))
+                cart_item_exists = CartItem.objects.filter(cart=cart).exists()
+
+                if cart_item_exists:
+                    cart_items = CartItem.objects.filter(cart=cart)
+                    for item in cart_items:
+                        item.user = user
+                        item.save()
+            except:
+                pass    
+            auth.login(request, user)
+            messages.success(request, "you are logged in successfully")
+            return redirect('dashboard')
+    
+        else:
+            messages.error(request, 'invalid credintials')
+            return redirect('login')
 
     return render(request, 'accounts/login.html')
 
