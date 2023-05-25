@@ -31,7 +31,7 @@ def register(request):
                 # user activation
                 current_site = get_current_site(request)
                 print(current_site)
-                mail_subject = "Please avtivate your account"
+                mail_subject = "Please activate your account"
                 message = render_to_string('accounts/account_verifiaction_email.html', {
                     'user': user,
                     'domain': current_site,
