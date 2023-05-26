@@ -5,7 +5,26 @@ from carts.models import CartItem
 from orders.forms import OrderForm
 from orders.models import Order
 
-# Create your views here.
+
+
+def payments(request):
+    return render(request, 'orders/payments.html')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def place_order(request):
     current_user = request.user
 
@@ -22,7 +41,7 @@ def place_order(request):
     for cart_item in cart_items:
         total += (cart_item.quantity * cart_item.product.price)
         quantity += cart_item.quantity
-    tax = (0.2 * total)
+    tax = round((0.2 * total), 2)
     grand_total = total + tax
 
     if request.method == 'POST':
@@ -41,7 +60,7 @@ def place_order(request):
             data.city = form.cleaned_data['city']                                                                        
             data.order_note = form.cleaned_data['order_note']                                                                        
             data.order_total = grand_total
-            data.tax = tax
+            data.tax = round(tax, 2)
             data.ip = request.META.get('REMOTE_ADDR')
             data.save()
 
@@ -54,6 +73,15 @@ def place_order(request):
             order_number = current_date + str(data.id)
             data.order_number = order_number                    
             data.save()
-            return redirect('checkout')
+
+            order = Order.objects.get(user=current_user, is_ordered=False, order_number=order_number)
+            context = {
+                'order':order,
+                'cart_items':cart_items,
+                'total':total,
+                'tax':tax,
+                'grand_total': grand_total,
+            }
+            return render(request, 'orders/payments.html', context)
         else:
             return redirect('checkout')
