@@ -1,9 +1,11 @@
-from django.shortcuts import render, get_object_or_404
-from .models import Product
-from carts.models import Cart, CartItem
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from store.forms import ReviewForm
+from .models import Product, ReviewRating
+from carts.models import  CartItem
 from carts.views import _cart_id
 from category.models import Category
-from django.core.paginator import Page, PageNotAnInteger, Paginator
+from django.core.paginator import Paginator
 from django.db.models import Q
 # Create your views here.
 def store(request, category_slug=None):
@@ -60,3 +62,28 @@ def search(request):
         'keyword': keyword,
     }         
     return render(request, 'store/store.html', context)
+
+
+def submit_review(request, product_id=None):
+    if request.method == 'POST':
+        url = request.META.get('HTTP_REFERER')
+        print('url is', url)
+        try:
+            reviews = ReviewRating.objects.get(user__id=request.user.id, product__id=product_id)
+            form = ReviewForm(request.POST, instance=reviews)
+            form.save()
+            messages.success(request, 'Review updated successfully')
+            return redirect(url)
+        except ReviewRating.DoesNotExist:
+            form = ReviewForm(request.POST)
+            if form.is_valid():
+                data = ReviewRating()
+                data.product_id = product_id
+                data.user_id = request.user.id
+                data.subject = form.cleaned_data['subject']
+                data.review = form.cleaned_data['review']
+                data.rating = form.cleaned_data['rating']
+                data.ip = request.META.get('REMOTE_ADDR')
+                data.save()
+                messages.success(request, 'Review for this product added successfully')
+                return redirect(url)
