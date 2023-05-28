@@ -1,11 +1,14 @@
 import datetime
 from django.shortcuts import redirect, render
-
+from django.http import JsonResponse
 from carts.models import CartItem
 from orders.forms import OrderForm
 from orders.models import Order, OrderProduct, Payment
-import requests as req
+
 import json
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
+from store.models import Product
 
 def payments(request):
     body = json.loads(request.body)
@@ -38,9 +41,46 @@ def payments(request):
         orderproduct.save()
 
 
-    return render(request, 'orders/payments.html')
+        cart_item = CartItem.objects.get(id=item.id)
+      
+        product_variation = cart_item.variation.all()
+      
+        orderproduct = OrderProduct.objects.get(id=orderproduct.id)
+    
+        orderproduct.variation.set(product_variation)
+        orderproduct.save() 
+
+        # reduce the quantity of sold products
+        sold_product = Product.objects.get(id=item.product_id)
+        sold_product.stock -= item.quantity
+        sold_product.save()
+
+
+    #clear the cart
+    CartItem.objects.filter(user=request.user).delete() 
+
+
+    # send order received email to the customer
+     
+    mail_subject = 'Thank you for your order!'
+    message = render_to_string('orders/order_received_email.html', {
+        'user': request.user,
+        'order': order,
+    })
+    to_email = request.user.email
+    send_email = EmailMessage(mail_subject, message, to=[to_email])
+    send_email.send()
+
+    # send order number and transactionid back to senddata method via json response
+    data = {
+        'order_number': order.order_number,
+        'transID': payment.payment_id,
+    }
+    return JsonResponse(data)
+
 
 def place_order(request):
+
     current_user = request.user
 
     # first check if the cart_count is greater than zero
@@ -100,3 +140,12 @@ def place_order(request):
             return render(request, 'orders/payments.html', context)
     else:
         return render(request, 'store/checkout.html')
+    
+
+
+def order_complete(request):
+    order = Order.objects.filter(user=request.user)
+    context = {
+        'order':order,
+    }
+    return render(request, 'orders/order_complete.html', context)
