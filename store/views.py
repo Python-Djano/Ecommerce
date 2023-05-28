@@ -41,16 +41,24 @@ def product_detail(request, category_slug, product_slug):
 
     except Exception as e:
         raise e
-    
-    try:
-        orderedproduct = OrderProduct.objects.filter(user=request.user, product_id=single_product.id).exists()
-    except OrderProduct.DoesNotExist:
-        orderedproduct = None
+    if request.user.is_authenticated:
+        try:
+            orderedproduct = OrderProduct.objects.filter(user=request.user, product__id=single_product.id).exists()
+        except OrderProduct.DoesNotExist:
+            orderedproduct = None
+    else:
+        try:
+            orderedproduct = OrderProduct.objects.filter(product_id=single_product.id).exists()
+        except OrderProduct.DoesNotExist:
+            orderedproduct = None
 
+    # get the reviews
+    reviews = ReviewRating.objects.filter(product__id=single_product.id, status=True) 
     context  ={
         'single_product': single_product,
         'in_cart':in_cart,
        'orderedproduct':orderedproduct,
+       'reviews':reviews,
     }
 
     return render(request, 'store/product_detail.html', context)
