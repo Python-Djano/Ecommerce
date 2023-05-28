@@ -110,6 +110,7 @@
                             <dd class="text-right text-dark b"><strong>${{grand_total}}</strong></dd>
                         </dl>
                         <hr>
+                        
                         <p class="text-center mb-3">
                             <img src="{% static './images/misc/payments.png' %}" height="26">
                         </p>
@@ -152,6 +153,7 @@
     var orderId =  "{{order.order_number}}"
     var payment_method = "paypal"
     paypal.Buttons({
+    
 
         // Call your server to set up the transaction
         createOrder: function(data, actions) {
@@ -195,4 +197,5 @@
 
     }).render('#paypal-button-container');
 </script>
+
 {% endblock %}
