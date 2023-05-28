@@ -47,11 +47,7 @@ def product_detail(request, category_slug, product_slug):
         except OrderProduct.DoesNotExist:
             orderedproduct = None
     else:
-        try:
-            orderedproduct = OrderProduct.objects.filter(product_id=single_product.id).exists()
-        except OrderProduct.DoesNotExist:
-            orderedproduct = None
-
+        orderedproduct = None
     # get the reviews
     reviews = ReviewRating.objects.filter(product__id=single_product.id, status=True) 
     context  ={
