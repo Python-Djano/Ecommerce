@@ -3,7 +3,7 @@ from django.shortcuts import redirect, render
 
 from carts.models import CartItem
 from orders.forms import OrderForm
-from orders.models import Order, Payment
+from orders.models import Order, OrderProduct, Payment
 import requests as req
 import json
 
@@ -19,10 +19,25 @@ def payments(request):
         status = body['status']
 
     )
-    payment.save()
+    payment.save()  
     order.payment = payment
     order.is_ordered = True
     order.save()
+
+    # move the cartitems to orderproduct table
+    cart_items = CartItem.objects.filter(user=request.user)
+    for item in cart_items:
+        orderproduct = OrderProduct()   
+        orderproduct.order_id = order.id
+        orderproduct.user_id = request.user.id
+        orderproduct.payment = payment
+        orderproduct.product_id = item.product_id
+        orderproduct.quantity = item.quantity
+        orderproduct.product_price = item.product.price
+        orderproduct.ordered = True
+        orderproduct.save()
+
+
     return render(request, 'orders/payments.html')
 
 def place_order(request):
