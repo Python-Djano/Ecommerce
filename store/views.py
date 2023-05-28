@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
+from orders.models import OrderProduct
 from store.forms import ReviewForm
 from .models import Product, ReviewRating
 from carts.models import  CartItem
@@ -41,9 +42,15 @@ def product_detail(request, category_slug, product_slug):
     except Exception as e:
         raise e
     
+    try:
+        orderedproduct = OrderProduct.objects.filter(user=request.user, product_id=single_product.id).exists()
+    except OrderProduct.DoesNotExist:
+        orderedproduct = None
+
     context  ={
         'single_product': single_product,
         'in_cart':in_cart,
+       'orderedproduct':orderedproduct,
     }
 
     return render(request, 'store/product_detail.html', context)

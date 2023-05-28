@@ -116,7 +116,11 @@
                         <textarea name="review" id="" cols="" rows="4" class="form-control"></textarea>
                         <br>
                         {% if request.user.is_authenticated %}
+                            {% if orderedproduct %}
                         <input type="submit" value="Submit Review" class="btn btn-info mb-4">
+                            {% else %}
+                            <p>You must first purchase this product to review.</p>
+                                {% endif %}
                         {% else %}
                         <p>you must be logged in to review this product.  <span><a href="{% url 'login' %}">Login</a></span></p>
                         
