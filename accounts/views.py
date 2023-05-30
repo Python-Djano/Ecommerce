@@ -1,5 +1,5 @@
 
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import render, redirect, get_object_or_404
 
 from orders.models import Order, OrderProduct
 from .forms import RegisterationForm, UserForm, UserProfileForm
@@ -32,7 +32,13 @@ def register(request):
                 user = Account.objects.create_user(first_name=first_name, last_name=last_name, email=email, password=password, username=username)
                 user.phone_number = phone_number
                 user.save()
+                
 
+                # create the user profile
+                userprofile = UserProfile()
+                userprofile.user_id = user.id
+                userprofile.profile_picture = 'default/avatar4.jpg'
+                userprofile.save()
                 # user activation
                 current_site = get_current_site(request)
                 print(current_site)
@@ -215,8 +221,10 @@ def resetPassword(request):
 def dashboard(request):
     orders = Order.objects.filter(user=request.user, is_ordered=True).order_by('-created_at')
     orders_count = orders.count()
+    userprofile = UserProfile.objects.get(user=request.user)
     context = {
         'orders_count':orders_count,
+        'userprofile':userprofile,
     }
     return render(request, 'accounts/dashboard.html', context)
 
@@ -230,11 +238,18 @@ def my_orders(request):
 
 @login_required(login_url='login')
 def edit_profile(request):
-    userprofile =UserProfile.objects.get(user=request.user)
+    userprofile = get_object_or_404(UserProfile, user=request.user)
     if request.method == 'POST':
-        fo
-    user_form = UserForm()
-    profile_form = UserProfileForm()
+        user_form  = UserForm(request.POST, instance=request.user)
+        profile_form = UserProfileForm(request.POST, request.FILES, instance=userprofile)
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            messages.success(request, 'Your profile has been updated.')
+            return redirect('edit-profile')
+    else:        
+        user_form = UserForm(instance=request.user)
+        profile_form = UserProfileForm(instance=userprofile)
     context = {
         'user_form':user_form,
         'profile_form':profile_form,
