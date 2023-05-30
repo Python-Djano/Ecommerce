@@ -213,6 +213,15 @@ def resetPassword(request):
 def dashboard(request):
     return render(request, 'accounts/dashboard.html')
 
+def my_orders(request):
+    return render(request, 'accounts/my_orders.html')
+
+def edit_profile(request):
+    return render(request, 'accounts/edit_profile.html')
+
+def change_password(request):
+    return render(request, 'accounts/change_password.html')
+
 
 
 @login_required(login_url='login')
