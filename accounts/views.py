@@ -2,8 +2,8 @@
 from django.shortcuts import render, redirect, HttpResponse
 
 from orders.models import Order, OrderProduct
-from .forms import RegisterationForm
-from accounts.models import Account
+from .forms import RegisterationForm, UserForm, UserProfileForm
+from accounts.models import Account, UserProfile
 from django.contrib import messages
 from django.contrib import auth
 from carts.views import _cart_id
@@ -230,7 +230,17 @@ def my_orders(request):
 
 @login_required(login_url='login')
 def edit_profile(request):
-    return render(request, 'accounts/edit_profile.html')
+    userprofile =UserProfile.objects.get(user=request.user)
+    if request.method == 'POST':
+        fo
+    user_form = UserForm()
+    profile_form = UserProfileForm()
+    context = {
+        'user_form':user_form,
+        'profile_form':profile_form,
+        'userprofile':userprofile,
+    }
+    return render(request, 'accounts/edit_profile.html', context)
 
 @login_required(login_url='login')
 def change_password(request):
