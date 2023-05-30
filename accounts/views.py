@@ -1,7 +1,7 @@
 
 from django.shortcuts import render, redirect, HttpResponse
 
-from orders.models import Order
+from orders.models import Order, OrderProduct
 from .forms import RegisterationForm
 from accounts.models import Account
 from django.contrib import messages
@@ -220,16 +220,36 @@ def dashboard(request):
     }
     return render(request, 'accounts/dashboard.html', context)
 
+@login_required(login_url='login')
 def my_orders(request):
-    return render(request, 'accounts/my_orders.html')
+    orders = Order.objects.filter(user=request.user, is_ordered=True).order_by('-created_at')
+    context = {
+        'orders': orders,
+    }
+    return render(request, 'accounts/my_orders.html', context)
 
+@login_required(login_url='login')
 def edit_profile(request):
     return render(request, 'accounts/edit_profile.html')
 
+@login_required(login_url='login')
 def change_password(request):
     return render(request, 'accounts/change_password.html')
 
+@login_required(login_url='login')
+def order_detail(request, order_id):
+    order_detail = OrderProduct.objects.filter(order__order_number=order_id, ordered=True)
+    order = Order.objects.get(order_number=order_id)
 
+    subtotal = 0 
+    for i in order_detail:
+        subtotal += i.product_price * i.quantity
+    context = {
+        'order_detail': order_detail,
+        'order': order,
+        'subtotal': subtotal,
+    }
+    return render(request, 'accounts/order_detail.html', context)
 
 @login_required(login_url='login')
 def logout(request):
