@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from orders.models import OrderProduct
 from store.forms import ReviewForm
-from .models import Product, ReviewRating
+from .models import Product, ProductGallery, ReviewRating
 from carts.models import  CartItem
 from carts.views import _cart_id
 from category.models import Category
@@ -50,11 +50,15 @@ def product_detail(request, category_slug, product_slug):
         orderedproduct = None
     # get the reviews
     reviews = ReviewRating.objects.filter(product__id=single_product.id, status=True) 
+
+    # get the product gallery.
+    product_gallery = ProductGallery.objects.filter(product_id=single_product.id)
     context  ={
         'single_product': single_product,
         'in_cart':in_cart,
        'orderedproduct':orderedproduct,
        'reviews':reviews,
+       'product_gallery':product_gallery,
     }
 
     return render(request, 'store/product_detail.html', context)
@@ -78,7 +82,7 @@ def search(request):
 def submit_review(request, product_id=None):
     if request.method == 'POST':
         url = request.META.get('HTTP_REFERER')
-        print('url is', url)
+        
         try:
             reviews = ReviewRating.objects.get(user__id=request.user.id, product__id=product_id)
             form = ReviewForm(request.POST, instance=reviews)
