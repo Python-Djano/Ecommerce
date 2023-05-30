@@ -1,5 +1,7 @@
 
 from django.shortcuts import render, redirect, HttpResponse
+
+from orders.models import Order
 from .forms import RegisterationForm
 from accounts.models import Account
 from django.contrib import messages
@@ -211,7 +213,12 @@ def resetPassword(request):
 
 @login_required(login_url='login')
 def dashboard(request):
-    return render(request, 'accounts/dashboard.html')
+    orders = Order.objects.filter(user=request.user, is_ordered=True).order_by('-created_at')
+    orders_count = orders.count()
+    context = {
+        'orders_count':orders_count,
+    }
+    return render(request, 'accounts/dashboard.html', context)
 
 def my_orders(request):
     return render(request, 'accounts/my_orders.html')
