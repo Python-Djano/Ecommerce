@@ -24,7 +24,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG',default=True, cast=bool)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['django-greatkart-env.eba-wbbxnime.us-west-2.elasticbeanstalk.com']
 
 
 # Application definition
@@ -139,7 +139,6 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 
 
-
 # smtp configuration
 
 EMAIL_HOST = config('EMAIL_HOST')
@@ -155,10 +154,12 @@ MESSAGE_TAGS = {
     messages.ERROR: 'danger',
 }
 
-
+# account_number for bhishan aws
+# 832607185412
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'accounts.Account'
+
