@@ -32,13 +32,7 @@ def register(request):
                 user = Account.objects.create_user(first_name=first_name, last_name=last_name, email=email, password=password, username=username)
                 user.phone_number = phone_number
                 user.save()
-                
-
-                # create the user profile
-                userprofile = UserProfile()
-                userprofile.user_id = user.id
-                userprofile.profile_picture = 'default/avatar4.jpg'
-                userprofile.save()
+      
                 # user activation
                 current_site = get_current_site(request)
 
@@ -219,7 +213,9 @@ def resetPassword(request):
 def dashboard(request):
     orders = Order.objects.filter(user=request.user, is_ordered=True).order_by('-created_at')
     orders_count = orders.count()
+    
     userprofile = UserProfile.objects.get(user=request.user)
+    
     context = {
         'orders_count':orders_count,
         'userprofile':userprofile,

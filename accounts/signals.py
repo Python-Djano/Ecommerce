@@ -1,0 +1,11 @@
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+from .models import UserProfile, Account
+
+@receiver(post_save, sender=Account)
+def create_profile(sender, instance, created, **kwargs):
+    if created:
+        user = UserProfile.objects.create(user=instance)
+        user.profile_picture = 'images/avatars.jpg'
+        user.save()
