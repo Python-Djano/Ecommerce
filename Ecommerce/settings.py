@@ -162,7 +162,7 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
-# from .cdn.conf import *
+from .cdn.conf import *
 
 
 # smtp configuration
