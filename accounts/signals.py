@@ -7,5 +7,5 @@ from .models import UserProfile, Account
 def create_profile(sender, instance, created, **kwargs):
     if created:
         user = UserProfile.objects.create(user=instance)
-        user.profile_picture = 'images/avatars.jpg'
+
         user.save()
