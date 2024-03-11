@@ -29,7 +29,7 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", 'anischachdsovhwvoqweq')
 DEBUG = os.getenv("DEBUG", "True") == "True"
 
 ALLOWED_HOSTS = [
-    
+    'nbubag-gmbt2.ondigitalocean.app',
     "localhost",
     "127.0.0.1",
     "::1",
