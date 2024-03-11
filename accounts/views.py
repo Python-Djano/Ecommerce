@@ -41,7 +41,7 @@ def register(request):
                 userprofile.save()
                 # user activation
                 current_site = get_current_site(request)
-                print(current_site)
+
                 mail_subject = "Please activate your account"
                 message = render_to_string('accounts/account_verifiaction_email.html', {
                     'user': user,
@@ -82,7 +82,6 @@ def login(request):
                     for item in cart_items:
                         variation = item.variation.all()
                         product_variation.append(list(variation))
-                    print("product variation is", product_variation)
                     # get the  cart items from the user to access his product variations
                     cart_items = CartItem.objects.filter(user=user)
                     ex_var_list = []
@@ -91,7 +90,6 @@ def login(request):
                         existing_variation = item.variation.all()
                         ex_var_list.append(list(existing_variation))
                         id.append(item.id) 
-                    print("existing variation is", ex_var_list)
 
                     for pr in product_variation:
                         if pr in ex_var_list:

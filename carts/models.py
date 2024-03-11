@@ -23,6 +23,3 @@ class CartItem(models.Model):
     def __unicode__(self):
         return self.product
     
-    #     if self.product:
-    #         return self.product.product_name
-    #     return 'CartItem with no product'

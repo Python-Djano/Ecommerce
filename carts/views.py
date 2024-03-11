@@ -48,9 +48,8 @@ def add_to_cart(request, product_id):
             for item in cart_item:
                 existing_variation = item.variation.all()
                 ex_var_list.append(list(existing_variation))
-                print("existing variation list", ex_var_list)
                 id.append(item.id)
-                print("item id is", id)
+
         
             if product_variation in ex_var_list:
                 # increase the cart item quantity
@@ -116,9 +115,9 @@ def add_to_cart(request, product_id):
         for item in cart_item:
             existing_variation = item.variation.all()
             ex_var_list.append(list(existing_variation))
-            print("existing variation list", ex_var_list)
+
             id.append(item.id)
-            print("item id is", id)
+
     
         if product_variation in ex_var_list:
             # increase the cart item quantity
@@ -157,6 +156,7 @@ def remove_from_cart(request, product_id,cart_item_id):
             cart_item = CartItem.objects.get(product=product, user=request.user, id=cart_item_id)
         else:
             cart = Cart.objects.get(cart_id=_cart_id(request))
+            cart_item = CartItem.objects.get(product=product, cart=cart, id=cart_item_id)
         if cart_item.quantity > 1:
             cart_item.quantity -= 1
             cart_item.save()
@@ -169,7 +169,11 @@ def remove_from_cart(request, product_id,cart_item_id):
 
 def delete_cart_item(request, product_id, cart_item_id):   
     product = get_object_or_404(Product, id=product_id)
-    cart_item = CartItem.objects.get(product=product, user=request.user, id=cart_item_id)     
+    if request.user.is_authenticated:
+        cart_item = CartItem.objects.get(product=product, user=request.user, id=cart_item_id)
+    else:
+        cart = Cart.objects.get(cart_id=_cart_id(request))
+        cart_item = CartItem.objects.get(product=product, cart=cart, id=cart_item_id)
     cart_item.delete() 
     return redirect('cart')
 
