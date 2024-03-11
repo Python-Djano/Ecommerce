@@ -10,5 +10,5 @@ AWS_S3_OBJECT_PARAMETERS = {
 AWS_LOCATION = f"{AWS_STORAGE_BUCKET_NAME}.blr1"
 
 DEFAULT_FILE_STORAGE = "Ecommerce.cdn.backends.MediaRootS3Boto3Storage"
-STATICFILES_STORAGE = 'Ecommerce.cdn.backends.StaticRootS3Boto3Storage'
+# STATICFILES_STORAGE = 'Ecommerce.cdn.backends.StaticRootS3Boto3Storage'
 
