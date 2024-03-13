@@ -32,6 +32,7 @@ ALLOWED_HOSTS = [
     'nbubag-gmbt2.ondigitalocean.app',
     "localhost",
     "127.0.0.1",
+    'www.nbubag.com',
     "::1",
 ]
 
